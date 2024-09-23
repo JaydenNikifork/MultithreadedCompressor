@@ -10,7 +10,8 @@ them individually on separate threads.
 
 Currently this compressor only supports run-length encoding (RLE) 
 compression (which in hindsight is a terrible algorithm and just 
-makes my files bigger...). The compressor provides the algorithm 
+makes my files bigger... and yes I confirmed that the algorithm works 
+properly). The compressor provides the algorithm 
 the binary of the file, and RLE is run over that. For instance,
 rather than AAAB becoming 3A1B, we instead directly encode the binary 
 of AAAB (which I will not write out!).
