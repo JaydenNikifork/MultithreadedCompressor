@@ -12,8 +12,8 @@ Currently this compressor only supports run-length encoding (RLE)
 compression (which in hindsight is a terrible algorithm and just 
 makes my files bigger...). The compressor provides the algorithm 
 the binary of the file, and RLE is run over that. For instance,
-rather than AAAB becoming 3A1B, we instead encoding the binary
-runs of AAAB (which I will not write out!).
+rather than AAAB becoming 3A1B, we instead directly encode the binary 
+of AAAB (which I will not write out!).
 
 ### Usage
 
@@ -28,9 +28,16 @@ Then run:
 `<"compress" | "decompress">` to either compress or decompress, 
 `<algorithm>` to select which compression algo to use (RLE only for now), 
 and `<file>` as the name of your file to run on. When "compress" is 
-selected, the generated file will be named "<file>-comressed". When 
+selected, the generated file will be named "\<file\>-comressed". When 
 "decompress" is selected, the generated file will be named 
-"<file>-decompressed".
+"\<file\>-decompressed".
+
+### Efficiency
+
+For comparison, I wrote a singlethreaded compressor to compare to the 
+multithreaded version. For fixed-sized chunks of 2KB, I witnessed roughly 
+a 25% speed increase for the multithreaded version over both compression 
+and decompression of 100KB of data.
 
 ### Deeper Dive
 
@@ -43,7 +50,7 @@ the write order during decompression (more on this later). Data and size
 are of course the data from the `istream` and the size of data in bytes. 
 The task of partitioning is run over a single thread. After partitioning, 
 we begin compression on each of the Chunks. Each compression algo is run 
-on a separate thread and writes to the target file immediate on the 
+on a separate thread and writes to the target file immediately on the 
 threads completion, unless another thread is current writing, which
 in that case it waits. We handle this waiting using a mutex lock. 
 This method, results in Chunks being written out of order and 
@@ -52,7 +59,7 @@ for each Chunk with it's id and size which will help us during decompression.
 
 ##### Decompression
 
-Decompression works the same way as compression, apart from a few key 
+Decompression works the same way as compression apart from a few key 
 differences. Firstly, we use a different file partitioning algorithm. 
 Since the compressed file was written with compressed Chunks, we cannot 
 use the same fixed-sized Chunk partitioning. Now, we use the fixed-sized
@@ -107,3 +114,6 @@ but we should be able to do it over more data types. Another layer of
 abstraction between input and the `Compressor` class might make that cleaner.
 - I think the current class structure is okay, but something feels a bit 
 off about it for some reason. Would like to clean that up.
+- I never capped the maximum number of threads we can use, I think this 
+would be a nice feature to add. I'm pretty sure I spawn way too many 
+threads, and a thread pool would speed things up a bit.
