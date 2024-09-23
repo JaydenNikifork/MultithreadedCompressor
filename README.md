@@ -23,7 +23,7 @@ g++ main.cc compress.cc bitqueue.cc -o compressor
 ```
 Then run:
 ```
-compressor <"compress" | "decompress"> <algorithm> <file>
+./compressor <"compress" | "decompress"> <algorithm> <file>
 ```
 `<"compress" | "decompress">` to either compress or decompress, 
 `<algorithm>` to select which compression algo to use (RLE only for now), 
