@@ -2,7 +2,7 @@
 
 ### Summary
 
-Here we have a modular, multithreaded file compressor. 
+Here we have a modular, multithreaded file compressor written in C++. 
 It works by partitioning files into chunks and compressing/decompressing
 them individually on separate threads.
 
@@ -17,8 +17,14 @@ runs of AAAB (which I will not write out!).
 
 ### Usage
 
-First, run `g++ main.cc compress.cc bitqueue.cc -o compressor`.
-Then run `compressor <"compress" | "decompress"> <algorithm> <file>`
+Compile with (or your C++ compiler of choice):
+```
+g++ main.cc compress.cc bitqueue.cc -o compressor
+```
+Then run:
+```
+compressor <"compress" | "decompress"> <algorithm> <file>
+```
 `<"compress" | "decompress">` to either compress or decompress, 
 `<algorithm>` to select which compression algo to use (RLE only for now), 
 and `<file>` as the name of your file to run on. When "compress" is 
@@ -56,7 +62,7 @@ Difference 2 is that we do not attempt to write to output immediately
 after decompression. We first must ensure the previous Chunk has been 
 written already so we obtain the same Chunk ordering as the original file. 
 The define the previous Chunk to be the Chunk with id = current Chunk.id - 
-1. We then define the first Chunk (the one with no previous) to have id = 0.
+1\. We then define the first Chunk (the one with no previous) to have id = 0.
 On the implementation side, I used promises and futures for awaiting.
 
 ##### String to Bits
